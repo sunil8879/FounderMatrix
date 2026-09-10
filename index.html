@@ -1637,5 +1637,109 @@ document
 
 </script>
 
+<script>
+
+   /* ============================================================
+   FINAL NaN SAFETY PATCH
+   Paste immediately BEFORE </script>
+============================================================ */
+
+function safeNumber(value, fallback = 0) {
+
+    if (value === null || value === undefined || value === "") {
+        return fallback;
+    }
+
+    // Remove commas, $, spaces and other common formatting
+    let cleaned = String(value)
+        .replace(/,/g, "")
+        .replace(/\$/g, "")
+        .trim();
+
+    let number = Number(cleaned);
+
+    return Number.isFinite(number) ? number : fallback;
+}
+
+
+/* ------------------------------------------------------------
+   REPLACE THE ORIGINAL NUMBER FORMATTERS
+------------------------------------------------------------ */
+
+formatNumber = function(value) {
+
+    const number = safeNumber(value, 0);
+
+    return number.toLocaleString("en-US");
+};
+
+
+formatCapital = function(value) {
+
+    const number = safeNumber(value, 0);
+
+    /*
+       PitchBook Capital Raised values in your JSON
+       are treated as US$ millions.
+
+       Example:
+       53364.24894 million
+       =
+       53.36 billion
+    */
+
+    const billions = number / 1000;
+
+    if (!Number.isFinite(billions)) {
+        return "0.00 B";
+    }
+
+    return billions.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }) + " B";
+};
+
+
+/* ------------------------------------------------------------
+   GLOBAL NaN PROTECTION
+------------------------------------------------------------ */
+
+window.addEventListener("error", function(event) {
+
+    if (
+        event &&
+        event.message &&
+        event.message.toLowerCase().includes("nan")
+    ) {
+
+        console.warn(
+            "PitchBook Matrix prevented a NaN error:",
+            event.message
+        );
+
+    }
+
+});
+
+
+/* ------------------------------------------------------------
+   INITIALIZE SAFELY
+------------------------------------------------------------ */
+
+try {
+
+    loadUniversityDatabase();
+
+} catch (error) {
+
+    console.error(
+        "WORLD_UNIVERSITIES.json could not be initialized:",
+        error
+    );
+
+}
+</script>
+
 </body>
 </html>
