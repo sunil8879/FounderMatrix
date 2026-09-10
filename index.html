@@ -875,7 +875,115 @@
 
 }
 
+/* ============================================================
+   FOOTER BUTTONS
+============================================================ */
 
+.footer-buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    padding: 25px 20px;
+
+}
+
+
+.footer-btn {
+
+    display: inline-flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    min-width: 150px;
+
+    padding: 13px 22px;
+
+    background: #40e0d0;
+
+    color: #000;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    border: 2px solid #40e0d0;
+
+    border-radius: 6px;
+
+    transition: all 0.25s ease;
+
+}
+
+
+.footer-btn:hover {
+
+    background: #000;
+
+    color: #40e0d0;
+
+    border-color: #40e0d0;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 20px rgba(64, 224, 208, 0.25);
+
+}
+
+
+.footer-bottom {
+
+    text-align: center;
+
+    padding: 18px 15px;
+
+    border-top: 1px solid rgba(255,255,255,0.15);
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+
+    .footer-buttons {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+    .footer-btn {
+
+        width: 90%;
+
+        max-width: 300px;
+
+    }
+
+}
 </style>
 </head>
 
@@ -3308,61 +3416,23 @@
 
 <footer>
 
-    <div class="footer-grid">
+    <div class="footer-buttons">
 
+        <a href="about.html" class="footer-btn">
+            ABOUT
+        </a>
 
-        <div class="footer-column">
+        <a href="disclaimer.html" class="footer-btn">
+            DISCLAIMER
+        </a>
 
-            <h3>ABOUT</h3>
+        <a href="privacy.html" class="footer-btn">
+            PRIVACY STATEMENT
+        </a>
 
-            <p>
-                PitchBook Founder Matrix is a Matrix Global education
-                intelligence project designed to help students understand
-                the entrepreneurial footprint associated with universities.
-            </p>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h3>DISCLAIMER</h3>
-
-            <p>
-                PitchBook data and university information should be
-                interpreted according to the methodology and coverage
-                applicable to the underlying source. Matrix Global
-                calculations and presentations are for informational
-                purposes.
-            </p>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h3>PRIVACY STATEMENT</h3>
-
-            <p>
-                This tool is designed as an informational search interface.
-                No personal information is required to search the
-                PitchBook Founder Matrix.
-            </p>
-
-        </div>
-
-
-        <div class="footer-column">
-
-            <h3>CONTACT US</h3>
-
-            <p>
-                For corrections, data-related questions, suggestions
-                or partnership enquiries, please contact Matrix Global.
-            </p>
-
-        </div>
-
+        <a href="contact.html" class="footer-btn">
+            CONTACT US
+        </a>
 
     </div>
 
@@ -3375,8 +3445,6 @@
 
 </footer>
 
-
-```html
 <script>
 
 /* ============================================================
