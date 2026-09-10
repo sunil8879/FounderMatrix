@@ -955,6 +955,7 @@
 </footer>
 
 
+```html
 <script>
 
 /* ============================================================
@@ -990,7 +991,7 @@ let universityDatabase = [];
 
 
 /* ============================================================
-   LOAD JSON
+   LOAD JSON SAFELY
 ============================================================ */
 
 async function loadJSON(file) {
@@ -1002,18 +1003,175 @@ async function loadJSON(file) {
         if (!response.ok) {
 
             throw new Error(
-                "Unable to load " + file
+                "Unable to load " +
+                file +
+                " | HTTP " +
+                response.status
             );
 
         }
 
-        return await response.json();
+
+        /*
+           Read the file as TEXT first.
+
+           This is important because response.json()
+           immediately fails when the file contains
+           invalid values such as:
+
+           NaN
+           Infinity
+           -Infinity
+           None
+           True
+           False
+        */
+
+        let text = await response.text();
+
+
+        /*
+           Remove BOM if present.
+        */
+
+        text = text.replace(/^\uFEFF/, "");
+
+
+        /*
+           Convert Python / JavaScript-style invalid
+           JSON values ONLY when they appear as values.
+
+           This prevents accidental changes to legitimate
+           university names containing words such as "NaN".
+        */
+
+        text = text.replace(
+            /(:\s*)NaN\b/g,
+            "$1null"
+        );
+
+        text = text.replace(
+            /(:\s*)Infinity\b/g,
+            "$1null"
+        );
+
+        text = text.replace(
+            /(:\s*)-Infinity\b/g,
+            "$1null"
+        );
+
+        text = text.replace(
+            /(:\s*)None\b/g,
+            "$1null"
+        );
+
+        text = text.replace(
+            /(:\s*)True\b/g,
+            "$1true"
+        );
+
+        text = text.replace(
+            /(:\s*)False\b/g,
+            "$1false"
+        );
+
+
+        /*
+           Parse the cleaned JSON.
+        */
+
+        try {
+
+            return JSON.parse(text);
+
+        }
+
+        catch (jsonError) {
+
+            console.error(
+                "================================================"
+            );
+
+            console.error(
+                "INVALID JSON:"
+            );
+
+            console.error(
+                file
+            );
+
+            console.error(
+                "================================================"
+            );
+
+            console.error(
+                jsonError.message
+            );
+
+
+            /*
+               Try to identify the approximate location
+               of the JSON error.
+            */
+
+            const match =
+                jsonError.message.match(
+                    /position\s+(\d+)/i
+                );
+
+
+            if (match) {
+
+                const position =
+                    Number(match[1]);
+
+
+                console.error(
+                    "PROBLEM AREA:"
+                );
+
+
+                console.error(
+                    text.substring(
+                        Math.max(
+                            0,
+                            position - 150
+                        ),
+                        position + 150
+                    )
+                );
+
+            }
+
+
+            return [];
+
+        }
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "================================================"
+        );
+
+        console.error(
+            "FILE LOAD ERROR:"
+        );
+
+        console.error(
+            file
+        );
+
+        console.error(
+            error
+        );
+
+        console.error(
+            "================================================"
+        );
+
 
         return [];
 
@@ -1029,7 +1187,29 @@ async function loadJSON(file) {
 async function loadUniversityDatabase() {
 
     universityDatabase =
-        await loadJSON("WORLD_UNIVERSITIES.json");
+        await loadJSON(
+            "WORLD_UNIVERSITIES.json"
+        );
+
+
+    if (!Array.isArray(universityDatabase)) {
+
+        universityDatabase = [];
+
+
+        console.error(
+            "WORLD_UNIVERSITIES.json did not contain an array."
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "WORLD UNIVERSITIES LOADED:",
+        universityDatabase.length
+    );
 
 }
 
@@ -1040,7 +1220,10 @@ async function loadUniversityDatabase() {
 
 function findUniversityWebsite(universityName) {
 
-    if (!Array.isArray(universityDatabase)) {
+    if (
+        !Array.isArray(universityDatabase) ||
+        universityDatabase.length === 0
+    ) {
 
         return "";
 
@@ -1048,28 +1231,82 @@ function findUniversityWebsite(universityName) {
 
 
     const target =
-        normalizeUniversityName(universityName);
+        normalizeUniversityName(
+            universityName
+        );
+
+
+    if (!target) {
+
+        return "";
+
+    }
 
 
     let bestMatch = null;
 
 
-    for (const item of universityDatabase) {
-
-        const possibleName =
-            item.University ||
-            item.university ||
-            item.name ||
-            item.Name ||
-            item.institution ||
-            item.Institution ||
-            "";
-
-        if (!possibleName) continue;
+    for (
+        const item of universityDatabase
+    ) {
 
 
         if (
-            normalizeUniversityName(possibleName) === target
+            !item ||
+            typeof item !== "object"
+        ) {
+
+            continue;
+
+        }
+
+
+        /*
+           WORLD_UNIVERSITIES.json uses:
+
+           UNIVERSITY
+           COUNTRY
+           FOUNDED
+           WEBSITE
+
+           We also support other possible
+           capitalizations.
+        */
+
+        const possibleName =
+
+            item.UNIVERSITY ||
+
+            item.University ||
+
+            item.university ||
+
+            item.name ||
+
+            item.Name ||
+
+            item.institution ||
+
+            item.Institution ||
+
+            "";
+
+
+        if (!possibleName) {
+
+            continue;
+
+        }
+
+
+        const normalizedName =
+            normalizeUniversityName(
+                possibleName
+            );
+
+
+        if (
+            normalizedName === target
         ) {
 
             bestMatch = item;
@@ -1088,7 +1325,14 @@ function findUniversityWebsite(universityName) {
     }
 
 
+    /*
+       IMPORTANT:
+       WORLD_UNIVERSITIES.json uses WEBSITE.
+    */
+
     return (
+
+        bestMatch.WEBSITE ||
 
         bestMatch.Website ||
 
@@ -1115,13 +1359,37 @@ function findUniversityWebsite(universityName) {
 
 function normalizeUniversityName(name) {
 
-    return String(name || "")
+    return String(
+        name || ""
+    )
+
         .toLowerCase()
-        .replace(/&/g, "and")
-        .replace(/[.,'’"`]/g, "")
-        .replace(/\buniversity of\b/g, "university")
-        .replace(/\buniv\b/g, "university")
-        .replace(/\s+/g, " ")
+
+        .replace(
+            /&/g,
+            "and"
+        )
+
+        .replace(
+            /[.,'’"`]/g,
+            ""
+        )
+
+        .replace(
+            /\buniversity of\b/g,
+            "university"
+        )
+
+        .replace(
+            /\buniv\b/g,
+            "university"
+        )
+
+        .replace(
+            /\s+/g,
+            " "
+        )
+
         .trim();
 
 }
@@ -1131,7 +1399,9 @@ function normalizeUniversityName(name) {
    FIND UNIVERSITY IMAGE
 ============================================================ */
 
-async function getUniversityImage(universityName) {
+async function getUniversityImage(
+    universityName
+) {
 
     const fallback =
         "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/640px-No-Image-Placeholder.svg.png";
@@ -1140,7 +1410,10 @@ async function getUniversityImage(universityName) {
     try {
 
         const title =
-            encodeURIComponent(universityName);
+            encodeURIComponent(
+                universityName
+            );
+
 
         const response =
             await fetch(
@@ -1161,9 +1434,13 @@ async function getUniversityImage(universityName) {
 
 
         if (
+
             data &&
+
             data.thumbnail &&
+
             data.thumbnail.source
+
         ) {
 
             return data.thumbnail.source;
@@ -1188,43 +1465,106 @@ async function getUniversityImage(universityName) {
 
 
 /* ============================================================
+   SAFE NUMBER
+============================================================ */
+
+function safeNumber(
+    value,
+    fallback = 0
+) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return fallback;
+
+    }
+
+
+    let cleaned =
+        String(value)
+
+            .replace(
+                /,/g,
+                ""
+            )
+
+            .replace(
+                /[$₹€£]/g,
+                ""
+            )
+
+            .trim();
+
+
+    const number =
+        Number(cleaned);
+
+
+    return Number.isFinite(
+        number
+    )
+        ? number
+        : fallback;
+
+}
+
+
+/* ============================================================
    FORMAT CAPITAL
 ============================================================ */
 
 function formatCapital(value) {
 
     const number =
-        Number(value);
+        safeNumber(
+            value,
+            0
+        );
 
 
-    if (!Number.isFinite(number)) {
+    /*
+       PitchBook values in the supplied JSON
+       are treated as US$ millions.
+
+       Example:
+
+       53,364.24894 million
+
+       becomes:
+
+       53.36 billion
+    */
+
+
+    const billions =
+        number / 1000;
+
+
+    if (
+        !Number.isFinite(
+            billions
+        )
+    ) {
 
         return "0.00 B";
 
     }
 
 
-    /*
-       PitchBook values in the supplied JSON appear
-       to be in millions of US dollars.
-
-       Therefore:
-
-       53,364.24894 million
-       =
-       53.36424894 billion
-    */
-
-    const billions =
-        number / 1000;
-
-
     return billions.toLocaleString(
         "en-US",
         {
+
             minimumFractionDigits: 2,
+
             maximumFractionDigits: 2
+
         }
+
     ) + " B";
 
 }
@@ -1237,46 +1577,56 @@ function formatCapital(value) {
 function formatNumber(value) {
 
     const number =
-        Number(value);
+        safeNumber(
+            value,
+            0
+        );
 
 
-    if (!Number.isFinite(number)) {
-
-        return "0";
-
-    }
-
-
-    return number.toLocaleString("en-US");
+    return number.toLocaleString(
+        "en-US"
+    );
 
 }
 
 
 /* ============================================================
-   SEARCH
+   SEARCH UNIVERSITY
 ============================================================ */
 
 async function searchUniversity() {
 
     const type =
-        document.getElementById("typeSelect").value;
+        document.getElementById(
+            "typeSelect"
+        ).value;
 
 
     const format =
-        document.getElementById("formatSelect").value;
+        document.getElementById(
+            "formatSelect"
+        ).value;
 
 
     const rank =
-        Number(
-            document.getElementById("rankInput").value
+        safeNumber(
+            document.getElementById(
+                "rankInput"
+            ).value,
+            0
         );
 
 
     const resultArea =
-        document.getElementById("resultArea");
+        document.getElementById(
+            "resultArea"
+        );
 
 
-    if (!rank || rank < 1) {
+    if (
+        !rank ||
+        rank < 1
+    ) {
 
         resultArea.innerHTML = `
 
@@ -1307,14 +1657,11 @@ async function searchUniversity() {
 
 
     const file =
+        DATA_FILES[type] &&
         DATA_FILES[type][format];
 
 
-    const data =
-        await loadJSON(file);
-
-
-    if (!Array.isArray(data)) {
+    if (!file) {
 
         resultArea.innerHTML = `
 
@@ -1322,7 +1669,39 @@ async function searchUniversity() {
 
                 <strong>DATA ERROR</strong>
 
-                Could not read ${file}.
+                Invalid PitchBook category selected.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const data =
+        await loadJSON(
+            file
+        );
+
+
+    if (
+        !Array.isArray(data) ||
+        data.length === 0
+    ) {
+
+        resultArea.innerHTML = `
+
+            <div class="not-found">
+
+                <strong>DATA ERROR</strong>
+
+                Could not read ${escapeHTML(file)}.
+
+                <br><br>
+
+                Check the browser console for details.
 
             </div>
 
@@ -1334,16 +1713,24 @@ async function searchUniversity() {
 
 
     /*
-       Match rank.
+       Match PitchBook rank.
 
-       Rank may be numeric or string
-       depending on JSON.
+       Supports numeric and string Rank values.
     */
 
     const record =
         data.find(
-            item =>
-                Number(item.Rank) === rank
+            item => {
+
+                return (
+                    safeNumber(
+                        item &&
+                        item.Rank,
+                        -1
+                    ) === rank
+                );
+
+            }
         );
 
 
@@ -1355,8 +1742,12 @@ async function searchUniversity() {
 
                 <strong>NO RESULT FOUND</strong>
 
-                Rank ${rank} is not available
-                in ${file}.
+                Rank ${escapeHTML(
+                    String(rank)
+                )}
+
+                is not available
+                in ${escapeHTML(file)}.
 
             </div>
 
@@ -1368,35 +1759,69 @@ async function searchUniversity() {
 
 
     const university =
-        record.University || "Unknown University";
+        record.University ||
+        record.UNIVERSITY ||
+        "Unknown University";
 
+
+    /*
+       Find website from WORLD_UNIVERSITIES.json.
+    */
 
     const website =
-        findUniversityWebsite(university);
+        findUniversityWebsite(
+            university
+        );
 
+
+    /*
+       Find university image.
+    */
 
     const image =
-        await getUniversityImage(university);
+        await getUniversityImage(
+            university
+        );
 
+
+    /*
+       Prepare website HTML.
+    */
 
     const websiteHTML =
         website
+
             ? `
+
                 <a
                     class="website-link"
-                    href="${normalizeWebsite(website)}"
+                    href="${escapeHTML(
+                        normalizeWebsite(
+                            website
+                        )
+                    )}"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    ${escapeHTML(website)}
+                    ${escapeHTML(
+                        website
+                    )}
                 </a>
+
               `
+
             : `
+
                 <span>
                     Website not available
                 </span>
+
               `;
 
+
+    /*
+       Display result.
+    */
 
     resultArea.innerHTML = `
 
@@ -1405,25 +1830,49 @@ async function searchUniversity() {
 
             <div class="result-top">
 
+
                 <img
+
                     class="university-image"
-                    src="${image}"
-                    alt="${escapeHTML(university)}"
-                    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/640px-No-Image-Placeholder.svg.png'"
+
+                    src="${escapeHTML(
+                        image
+                    )}"
+
+                    alt="${escapeHTML(
+                        university
+                    )}"
+
+                    onerror="
+                        this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/640px-No-Image-Placeholder.svg.png'
+                    "
+
                 >
 
 
                 <div class="university-heading">
 
+
                     <h2>
-                        ${escapeHTML(university)}
+
+                        ${escapeHTML(
+                            university
+                        )}
+
                     </h2>
 
+
                     <div class="rank-badge">
-                        PITCHBOOK RANK #${rank}
+
+                        PITCHBOOK RANK #${formatNumber(
+                            rank
+                        )}
+
                     </div>
 
+
                 </div>
+
 
             </div>
 
@@ -1433,39 +1882,66 @@ async function searchUniversity() {
 
                 <div class="stat">
 
+
                     <div class="stat-label">
+
                         Founder Count
+
                     </div>
 
+
                     <div class="stat-value">
-                        ${formatNumber(record["Founder Count"])}
+
+                        ${formatNumber(
+                            record["Founder Count"]
+                        )}
+
                     </div>
+
 
                 </div>
 
 
                 <div class="stat">
 
+
                     <div class="stat-label">
+
                         Company Count
+
                     </div>
 
+
                     <div class="stat-value">
-                        ${formatNumber(record["Company Count"])}
+
+                        ${formatNumber(
+                            record["Company Count"]
+                        )}
+
                     </div>
+
 
                 </div>
 
 
                 <div class="stat">
 
+
                     <div class="stat-label">
+
                         Capital Raised
+
                     </div>
 
+
                     <div class="stat-value">
-                        ${formatCapital(record["Capital Raised"])}
+
+                        ${formatCapital(
+                            record["Capital Raised"]
+                        )}
+
                     </div>
+
 
                 </div>
 
@@ -1481,7 +1957,12 @@ async function searchUniversity() {
                     <strong>Status</strong>
 
                     <span>
-                        ${escapeHTML(record.Status || "Not available")}
+
+                        ${escapeHTML(
+                            record.Status ||
+                            "Not available"
+                        )}
+
                     </span>
 
                 </div>
@@ -1492,7 +1973,12 @@ async function searchUniversity() {
                     <strong>Country</strong>
 
                     <span>
-                        ${escapeHTML(record.Country || "Not available")}
+
+                        ${escapeHTML(
+                            record.Country ||
+                            "Not available"
+                        )}
+
                     </span>
 
                 </div>
@@ -1512,7 +1998,12 @@ async function searchUniversity() {
                     <strong>Category</strong>
 
                     <span>
-                        ${escapeHTML(record.List || format)}
+
+                        ${escapeHTML(
+                            record.List ||
+                            format
+                        )}
+
                     </span>
 
                 </div>
@@ -1523,7 +2014,12 @@ async function searchUniversity() {
                     <strong>Enrollment</strong>
 
                     <span>
-                        ${escapeHTML(record.Enrollment || "Not available")}
+
+                        ${escapeHTML(
+                            record.Enrollment ||
+                            "Not available"
+                        )}
+
                     </span>
 
                 </div>
@@ -1534,7 +2030,12 @@ async function searchUniversity() {
                     <strong>Geography</strong>
 
                     <span>
-                        ${escapeHTML(record.Geography || "Not available")}
+
+                        ${escapeHTML(
+                            record.Geography ||
+                            "Not available"
+                        )}
+
                     </span>
 
                 </div>
@@ -1553,8 +2054,11 @@ async function searchUniversity() {
     */
 
     resultArea.scrollIntoView({
+
         behavior: "smooth",
+
         block: "start"
+
     });
 
 }
@@ -1567,7 +2071,9 @@ async function searchUniversity() {
 function normalizeWebsite(url) {
 
     let value =
-        String(url || "").trim();
+        String(
+            url || ""
+        ).trim();
 
 
     if (!value) {
@@ -1577,13 +2083,57 @@ function normalizeWebsite(url) {
     }
 
 
+    /*
+       Remove Markdown hyperlink formatting if your
+       WORLD_UNIVERSITIES.json contains something like:
+
+       [https://example.com/](https://example.com/)
+    */
+
+    const markdownMatch =
+        value.match(
+            /^\[.*?\]\((https?:\/\/.*?)\)$/i
+        );
+
+
+    if (markdownMatch) {
+
+        value =
+            markdownMatch[1];
+
+    }
+
+
+    /*
+       Remove surrounding quotation marks.
+    */
+
+    value =
+        value.replace(
+            /^["']|["']$/g,
+            ""
+        );
+
+
+    /*
+       Add HTTPS if the URL has no protocol.
+    */
+
     if (
-        !value.startsWith("http://") &&
-        !value.startsWith("https://")
+
+        !value.startsWith(
+            "http://"
+        ) &&
+
+        !value.startsWith(
+            "https://"
+        )
+
     ) {
 
         value =
-            "https://" + value;
+            "https://" +
+            value;
 
     }
 
@@ -1599,12 +2149,37 @@ function normalizeWebsite(url) {
 
 function escapeHTML(value) {
 
-    return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value === null ||
+        value === undefined
+            ? ""
+            : value
+    )
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -1620,122 +2195,52 @@ loadUniversityDatabase();
    ENTER KEY
 ============================================================ */
 
-document
-    .getElementById("rankInput")
-    .addEventListener(
+const rankInput =
+    document.getElementById(
+        "rankInput"
+    );
+
+
+if (rankInput) {
+
+    rankInput.addEventListener(
+
         "keydown",
+
         function(event) {
 
-            if (event.key === "Enter") {
+            if (
+                event.key === "Enter"
+            ) {
 
                 searchUniversity();
 
             }
 
         }
+
     );
 
-</script>
-
-<script>
-
-  
-function safeNumber(value, fallback = 0) {
-
-    if (value === null || value === undefined || value === "") {
-        return fallback;
-    }
-
-    // Remove commas, $, spaces and other common formatting
-    let cleaned = String(value)
-        .replace(/,/g, "")
-        .replace(/\$/g, "")
-        .trim();
-
-    let number = Number(cleaned);
-
-    return Number.isFinite(number) ? number : fallback;
 }
 
 
-/* ------------------------------------------------------------
-   REPLACE THE ORIGINAL NUMBER FORMATTERS
------------------------------------------------------------- */
+/* ============================================================
+   GLOBAL ERROR LOGGING
+============================================================ */
 
-formatNumber = function(value) {
+window.addEventListener(
+    "error",
+    function(event) {
 
-    const number = safeNumber(value, 0);
-
-    return number.toLocaleString("en-US");
-};
-
-
-formatCapital = function(value) {
-
-    const number = safeNumber(value, 0);
-
-    /*
-       PitchBook Capital Raised values in your JSON
-       are treated as US$ millions.
-
-       Example:
-       53364.24894 million
-       =
-       53.36 billion
-    */
-
-    const billions = number / 1000;
-
-    if (!Number.isFinite(billions)) {
-        return "0.00 B";
-    }
-
-    return billions.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }) + " B";
-};
-
-
-/* ------------------------------------------------------------
-   GLOBAL NaN PROTECTION
------------------------------------------------------------- */
-
-window.addEventListener("error", function(event) {
-
-    if (
-        event &&
-        event.message &&
-        event.message.toLowerCase().includes("nan")
-    ) {
-
-        console.warn(
-            "PitchBook Matrix prevented a NaN error:",
+        console.error(
+            "PitchBook Matrix error:",
+            event.error ||
             event.message
         );
 
     }
+);
 
-});
-
-
-/* ------------------------------------------------------------
-   INITIALIZE SAFELY
------------------------------------------------------------- */
-
-try {
-
-    loadUniversityDatabase();
-
-} catch (error) {
-
-    console.error(
-        "WORLD_UNIVERSITIES.json could not be initialized:",
-        error
-    );
-
-}
 </script>
-
 </body>
 </html>
