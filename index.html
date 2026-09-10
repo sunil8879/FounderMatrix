@@ -1,0 +1,1641 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PITCHBOOK - FOUNDER MATRIX</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #000;
+        color: #fff;
+        min-height: 100vh;
+    }
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    header {
+        min-height: 260px;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(127,255,212,.28), transparent 30%),
+            radial-gradient(circle at 85% 80%, rgba(127,255,212,.18), transparent 35%),
+            linear-gradient(135deg, #000 0%, #061715 45%, #7fffd4 180%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 45px 20px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 2px solid aquamarine;
+    }
+
+    header::before,
+    header::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(127,255,212,.25);
+        border-radius: 50%;
+    }
+
+    header::before {
+        width: 430px;
+        height: 430px;
+        left: -170px;
+        top: -230px;
+    }
+
+    header::after {
+        width: 500px;
+        height: 500px;
+        right: -230px;
+        bottom: -300px;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .eyebrow {
+        color: aquamarine;
+        font-size: 13px;
+        letter-spacing: 5px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
+
+    h1 {
+        font-size: clamp(34px, 6vw, 72px);
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-shadow: 0 0 25px rgba(127,255,212,.25);
+    }
+
+    .tagline {
+        margin-top: 16px;
+        font-size: clamp(15px, 2vw, 22px);
+        color: #fff;
+        letter-spacing: 1.5px;
+    }
+
+    .tagline span {
+        color: aquamarine;
+    }
+
+    /* =========================================================
+       MAIN
+    ========================================================= */
+
+    main {
+        width: min(1200px, 94%);
+        margin: 45px auto;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .section-title h2 {
+        color: aquamarine;
+        font-size: 30px;
+        letter-spacing: 2px;
+    }
+
+    .section-title p {
+        color: #bbb;
+        margin-top: 8px;
+    }
+
+    /* =========================================================
+       INPUT PANEL
+    ========================================================= */
+
+    .control-panel {
+        background: linear-gradient(145deg, #101010, #050505);
+        border: 1px solid rgba(127,255,212,.45);
+        border-radius: 24px;
+        padding: 30px;
+        box-shadow:
+            0 20px 60px rgba(0,0,0,.6),
+            0 0 35px rgba(127,255,212,.07);
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+    .control-group label {
+        display: block;
+        color: aquamarine;
+        font-weight: bold;
+        margin-bottom: 9px;
+        font-size: 14px;
+        letter-spacing: .8px;
+    }
+
+    select,
+    input {
+        width: 100%;
+        padding: 15px 16px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        background: #fff;
+        color: #000;
+        font-size: 16px;
+        outline: none;
+    }
+
+    select:focus,
+    input:focus {
+        border-color: aquamarine;
+        box-shadow: 0 0 0 3px rgba(127,255,212,.15);
+    }
+
+    .search-btn {
+        margin-top: 25px;
+        width: 100%;
+        padding: 17px;
+        border: none;
+        border-radius: 13px;
+        background: aquamarine;
+        color: #000;
+        font-size: 17px;
+        font-weight: 900;
+        cursor: pointer;
+        letter-spacing: 1px;
+        transition: .25s;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(127,255,212,.25);
+    }
+
+    /* =========================================================
+       RESULT
+    ========================================================= */
+
+    #resultArea {
+        margin-top: 35px;
+    }
+
+    .result-card {
+        background:
+            linear-gradient(145deg, #111 0%, #050505 100%);
+        border: 1px solid aquamarine;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow:
+            0 25px 80px rgba(0,0,0,.7),
+            0 0 45px rgba(127,255,212,.08);
+    }
+
+    .result-top {
+        background: linear-gradient(120deg, #7fffd4 0%, #1b3933 50%, #000 100%);
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .university-image {
+        width: 130px;
+        height: 130px;
+        border-radius: 18px;
+        object-fit: cover;
+        border: 3px solid #fff;
+        background: #111;
+        flex-shrink: 0;
+    }
+
+    .university-heading h2 {
+        color: #000;
+        font-size: clamp(25px, 4vw, 42px);
+        line-height: 1.1;
+    }
+
+    .rank-badge {
+        display: inline-block;
+        margin-top: 12px;
+        background: #000;
+        color: aquamarine;
+        padding: 8px 14px;
+        border-radius: 30px;
+        font-weight: bold;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: #333;
+    }
+
+    .stat {
+        background: #090909;
+        padding: 28px 20px;
+        text-align: center;
+    }
+
+    .stat-label {
+        color: #999;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-value {
+        color: aquamarine;
+        font-size: 30px;
+        font-weight: 900;
+        margin-top: 8px;
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1px;
+        background: #333;
+    }
+
+    .detail {
+        background: #0b0b0b;
+        padding: 20px;
+    }
+
+    .detail strong {
+        color: aquamarine;
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .detail span {
+        color: #fff;
+        font-size: 16px;
+    }
+
+    .website-link {
+        color: aquamarine;
+        text-decoration: none;
+        word-break: break-all;
+    }
+
+    .website-link:hover {
+        text-decoration: underline;
+    }
+
+    .not-found {
+        text-align: center;
+        padding: 35px;
+        border: 1px solid #333;
+        border-radius: 20px;
+        background: #090909;
+        color: #aaa;
+    }
+
+    .not-found strong {
+        display: block;
+        color: aquamarine;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    /* =========================================================
+       ASK ME
+    ========================================================= */
+
+    .ask-section {
+        margin-top: 80px;
+    }
+
+    .ask-intro {
+        text-align: center;
+        color: #bbb;
+        margin-bottom: 30px;
+    }
+
+    .ask-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .ask-card {
+        background: linear-gradient(145deg, #111, #050505);
+        border: 1px solid #292929;
+        border-left: 4px solid aquamarine;
+        border-radius: 18px;
+        padding: 25px;
+        transition: .25s;
+    }
+
+    .ask-card:hover {
+        transform: translateY(-4px);
+        border-color: aquamarine;
+    }
+
+    .ask-card h3 {
+        color: aquamarine;
+        margin-bottom: 14px;
+        font-size: 20px;
+    }
+
+    .ask-card p {
+        color: #ccc;
+        line-height: 1.7;
+        font-size: 15px;
+    }
+
+    .ask-card ul {
+        margin: 12px 0 0 20px;
+        color: #ccc;
+        line-height: 1.8;
+    }
+
+    .india-card {
+        grid-column: 1 / -1;
+    }
+
+    .india-table-wrapper {
+        overflow-x: auto;
+        margin-top: 18px;
+    }
+
+    .india-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+
+    .india-table th,
+    .india-table td {
+        padding: 13px;
+        border-bottom: 1px solid #292929;
+        text-align: left;
+    }
+
+    .india-table th {
+        color: aquamarine;
+        background: #050505;
+    }
+
+    .india-table td {
+        color: #ddd;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    footer {
+        margin-top: 90px;
+        border-top: 1px solid aquamarine;
+        background: #050505;
+        padding: 45px 4%;
+    }
+
+    .footer-grid {
+        width: min(1200px, 100%);
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+    }
+
+    .footer-column h3 {
+        color: aquamarine;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .footer-column p {
+        color: #888;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .footer-bottom {
+        width: min(1200px, 100%);
+        margin: 35px auto 0;
+        padding-top: 20px;
+        border-top: 1px solid #222;
+        text-align: center;
+        color: #555;
+        font-size: 12px;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 850px) {
+
+        .controls {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details {
+            grid-template-columns: 1fr;
+        }
+
+        .ask-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .india-card {
+            grid-column: auto;
+        }
+
+        .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .result-top {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        main {
+            width: 92%;
+        }
+
+        .control-panel {
+            padding: 20px;
+        }
+
+        .footer-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .university-image {
+            width: 105px;
+            height: 105px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <div class="header-content">
+
+        <div class="eyebrow">
+            MATRIX GLOBAL • ENTREPRENEURSHIP INTELLIGENCE
+        </div>
+
+        <h1>PITCHBOOK - FOUNDER MATRIX</h1>
+
+        <div class="tagline">
+            <span>Universities</span> → Founders → Companies → Capital
+        </div>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <!-- =====================================================
+         SEARCH
+    ====================================================== -->
+
+    <section>
+
+        <div class="section-title">
+
+            <h2>UNIVERSITY ENTREPRENEURSHIP SEARCH</h2>
+
+            <p>
+                Explore universities by founder output, companies created
+                and venture capital raised.
+            </p>
+
+        </div>
+
+
+        <div class="control-panel">
+
+            <div class="controls">
+
+                <div class="control-group">
+
+                    <label for="typeSelect">
+                        TYPE
+                    </label>
+
+                    <select id="typeSelect">
+
+                        <option value="General">
+                            General
+                        </option>
+
+                        <option value="Women">
+                            Women
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="control-group">
+
+                    <label for="formatSelect">
+                        FORMAT
+                    </label>
+
+                    <select id="formatSelect">
+
+                        <option value="Undergraduates">
+                            Undergraduates
+                        </option>
+
+                        <option value="Graduates">
+                            Graduates
+                        </option>
+
+                        <option value="MBA">
+                            MBA
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="control-group">
+
+                    <label for="rankInput">
+                        RANK
+                    </label>
+
+                    <input
+                        id="rankInput"
+                        type="number"
+                        min="1"
+                        placeholder="Enter rank e.g. 1"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="search-btn"
+                onclick="searchUniversity()"
+            >
+                🔎 EXPLORE FOUNDER MATRIX
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RESULT
+    ====================================================== -->
+
+    <section id="resultArea"></section>
+
+
+    <!-- =====================================================
+         ASK ME
+    ====================================================== -->
+
+    <section class="ask-section">
+
+        <div class="section-title">
+
+            <h2>ASK ME</h2>
+
+        </div>
+
+        <p class="ask-intro">
+            Understand the world behind university entrepreneurship,
+            venture capital and PitchBook data.
+        </p>
+
+
+        <div class="ask-grid">
+
+
+            <!-- VC -->
+
+            <div class="ask-card">
+
+                <h3>1. Venture Capital Investors</h3>
+
+                <p>
+                    Venture capital (VC) is investment capital provided
+                    to high-growth startups that have the potential to
+                    become large businesses.
+                </p>
+
+                <ul>
+                    <li>VC investors generally invest through investment funds.</li>
+                    <li>They look for businesses with high growth potential.</li>
+                    <li>VC funding can occur through Seed, Series A, Series B and later rounds.</li>
+                    <li>In return, investors normally receive an ownership stake in the company.</li>
+                </ul>
+
+            </div>
+
+
+            <!-- ANGEL -->
+
+            <div class="ask-card">
+
+                <h3>2. Angel Investors</h3>
+
+                <p>
+                    Angel investors are generally individuals who invest
+                    their own money in startups, particularly during
+                    early stages of development.
+                </p>
+
+                <ul>
+                    <li>Usually individual investors.</li>
+                    <li>Often invest earlier than large VC funds.</li>
+                    <li>May provide money, experience and business contacts.</li>
+                    <li>They normally receive equity in return for investment.</li>
+                </ul>
+
+            </div>
+
+
+            <!-- INDIA -->
+
+            <div class="ask-card india-card">
+
+                <h3>3. Indian Universities Featured in PitchBook</h3>
+
+                <p>
+                    PitchBook's university tables measure entrepreneurial
+                    outcomes associated with alumni and venture-backed
+                    companies. Being featured does not simply mean that
+                    an institution has the largest student population.
+                    It indicates that qualifying alumni founders and their
+                    companies are represented in PitchBook's dataset.
+                </p>
+
+
+                <div class="india-table-wrapper">
+
+                    <table class="india-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Institution</th>
+                                <th>Why It Can Appear</th>
+                                <th>What To Examine</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>ISB</td>
+                                <td>Strong business and entrepreneurial alumni network</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>IIT Bombay</td>
+                                <td>Technology and engineering alumni entrepreneurship</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>IIT Delhi</td>
+                                <td>Technology, engineering and startup ecosystem</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>IIT Kanpur</td>
+                                <td>Engineering, technology and research ecosystem</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>IIM Bangalore</td>
+                                <td>Business, management and entrepreneurial alumni</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>IIM Kolkata</td>
+                                <td>Management and business alumni network</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>University of Mumbai</td>
+                                <td>Large and diverse alumni base</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                            <tr>
+                                <td>Delhi University</td>
+                                <td>Large alumni network across multiple disciplines</td>
+                                <td>Courses, fees, founders, companies and capital</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- HOW TO READ -->
+
+            <div class="ask-card india-card">
+
+                <h3>4. How to Read PitchBook</h3>
+
+                <p>
+                    PitchBook Founder Matrix should not be interpreted
+                    as a conventional academic ranking. It provides a
+                    different perspective: the entrepreneurial and
+                    venture-capital footprint associated with university
+                    alumni.
+                </p>
+
+                <ul>
+
+                    <li>
+                        <strong>Undergraduates:</strong>
+                        founders associated with undergraduate education.
+                    </li>
+
+                    <li>
+                        <strong>Graduates:</strong>
+                        founders associated with graduate-level education
+                        other than the MBA category.
+                    </li>
+
+                    <li>
+                        <strong>MBA:</strong>
+                        founders associated with MBA programmes.
+                    </li>
+
+                    <li>
+                        <strong>Founder Count:</strong>
+                        number of founders represented in the relevant
+                        PitchBook dataset.
+                    </li>
+
+                    <li>
+                        <strong>Company Count:</strong>
+                        number of companies associated with those founders.
+                    </li>
+
+                    <li>
+                        <strong>Capital Raised:</strong>
+                        venture capital raised by the companies represented
+                        in the dataset.
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- IMPORTANT DISTINCTION -->
+
+            <div class="ask-card">
+
+                <h3>What Does Capital Raised Mean?</h3>
+
+                <p>
+                    Capital raised represents investment obtained by the
+                    relevant companies. It is not the university's revenue,
+                    the university's endowment or the founders' personal
+                    wealth.
+                </p>
+
+            </div>
+
+
+            <div class="ask-card">
+
+                <h3>What Does Founder Count Mean?</h3>
+
+                <p>
+                    Founder Count should be read as a measure of founders
+                    represented in the relevant PitchBook dataset. It does
+                    not mean that every entrepreneur produced by a university
+                    is necessarily included.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+    <div class="footer-grid">
+
+
+        <div class="footer-column">
+
+            <h3>ABOUT</h3>
+
+            <p>
+                PitchBook Founder Matrix is a Matrix Global education
+                intelligence project designed to help students understand
+                the entrepreneurial footprint associated with universities.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>DISCLAIMER</h3>
+
+            <p>
+                PitchBook data and university information should be
+                interpreted according to the methodology and coverage
+                applicable to the underlying source. Matrix Global
+                calculations and presentations are for informational
+                purposes.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>PRIVACY STATEMENT</h3>
+
+            <p>
+                This tool is designed as an informational search interface.
+                No personal information is required to search the
+                PitchBook Founder Matrix.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>CONTACT US</h3>
+
+            <p>
+                For corrections, data-related questions, suggestions
+                or partnership enquiries, please contact Matrix Global.
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 MATRIX GLOBAL • PITCHBOOK - FOUNDER MATRIX
+
+    </div>
+
+</footer>
+
+
+<script>
+
+/* ============================================================
+   FILE CONFIGURATION
+============================================================ */
+
+const DATA_FILES = {
+
+    General: {
+
+        Undergraduates: "UG.json",
+
+        Graduates: "graduates.json",
+
+        MBA: "MBA.json"
+
+    },
+
+    Women: {
+
+        Undergraduates: "W_UG.json",
+
+        Graduates: "W_graduates.json",
+
+        MBA: "W_MBA.json"
+
+    }
+
+};
+
+
+let universityDatabase = [];
+
+
+/* ============================================================
+   LOAD JSON
+============================================================ */
+
+async function loadJSON(file) {
+
+    try {
+
+        const response = await fetch(file);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load " + file
+            );
+
+        }
+
+        return await response.json();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return [];
+
+    }
+
+}
+
+
+/* ============================================================
+   LOAD UNIVERSITY WEBSITE DATABASE
+============================================================ */
+
+async function loadUniversityDatabase() {
+
+    universityDatabase =
+        await loadJSON("WORLD_UNIVERSITIES.json");
+
+}
+
+
+/* ============================================================
+   FIND WEBSITE
+============================================================ */
+
+function findUniversityWebsite(universityName) {
+
+    if (!Array.isArray(universityDatabase)) {
+
+        return "";
+
+    }
+
+
+    const target =
+        normalizeUniversityName(universityName);
+
+
+    let bestMatch = null;
+
+
+    for (const item of universityDatabase) {
+
+        const possibleName =
+            item.University ||
+            item.university ||
+            item.name ||
+            item.Name ||
+            item.institution ||
+            item.Institution ||
+            "";
+
+        if (!possibleName) continue;
+
+
+        if (
+            normalizeUniversityName(possibleName) === target
+        ) {
+
+            bestMatch = item;
+
+            break;
+
+        }
+
+    }
+
+
+    if (!bestMatch) {
+
+        return "";
+
+    }
+
+
+    return (
+
+        bestMatch.Website ||
+
+        bestMatch.website ||
+
+        bestMatch.URL ||
+
+        bestMatch.url ||
+
+        bestMatch["Website URL"] ||
+
+        bestMatch["website_url"] ||
+
+        ""
+
+    );
+
+}
+
+
+/* ============================================================
+   NORMALIZE UNIVERSITY NAMES
+============================================================ */
+
+function normalizeUniversityName(name) {
+
+    return String(name || "")
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[.,'’"`]/g, "")
+        .replace(/\buniversity of\b/g, "university")
+        .replace(/\buniv\b/g, "university")
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+/* ============================================================
+   FIND UNIVERSITY IMAGE
+============================================================ */
+
+async function getUniversityImage(universityName) {
+
+    const fallback =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/640px-No-Image-Placeholder.svg.png";
+
+
+    try {
+
+        const title =
+            encodeURIComponent(universityName);
+
+        const response =
+            await fetch(
+                "https://en.wikipedia.org/api/rest_v1/page/summary/" +
+                title
+            );
+
+
+        if (!response.ok) {
+
+            return fallback;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data &&
+            data.thumbnail &&
+            data.thumbnail.source
+        ) {
+
+            return data.thumbnail.source;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "University image unavailable:",
+            error
+        );
+
+    }
+
+
+    return fallback;
+
+}
+
+
+/* ============================================================
+   FORMAT CAPITAL
+============================================================ */
+
+function formatCapital(value) {
+
+    const number =
+        Number(value);
+
+
+    if (!Number.isFinite(number)) {
+
+        return "0.00 B";
+
+    }
+
+
+    /*
+       PitchBook values in the supplied JSON appear
+       to be in millions of US dollars.
+
+       Therefore:
+
+       53,364.24894 million
+       =
+       53.36424894 billion
+    */
+
+    const billions =
+        number / 1000;
+
+
+    return billions.toLocaleString(
+        "en-US",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    ) + " B";
+
+}
+
+
+/* ============================================================
+   FORMAT NUMBERS
+============================================================ */
+
+function formatNumber(value) {
+
+    const number =
+        Number(value);
+
+
+    if (!Number.isFinite(number)) {
+
+        return "0";
+
+    }
+
+
+    return number.toLocaleString("en-US");
+
+}
+
+
+/* ============================================================
+   SEARCH
+============================================================ */
+
+async function searchUniversity() {
+
+    const type =
+        document.getElementById("typeSelect").value;
+
+
+    const format =
+        document.getElementById("formatSelect").value;
+
+
+    const rank =
+        Number(
+            document.getElementById("rankInput").value
+        );
+
+
+    const resultArea =
+        document.getElementById("resultArea");
+
+
+    if (!rank || rank < 1) {
+
+        resultArea.innerHTML = `
+
+            <div class="not-found">
+
+                <strong>ENTER A RANK</strong>
+
+                Please enter a valid PitchBook rank.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    resultArea.innerHTML = `
+
+        <div class="not-found">
+
+            Loading PitchBook data...
+
+        </div>
+
+    `;
+
+
+    const file =
+        DATA_FILES[type][format];
+
+
+    const data =
+        await loadJSON(file);
+
+
+    if (!Array.isArray(data)) {
+
+        resultArea.innerHTML = `
+
+            <div class="not-found">
+
+                <strong>DATA ERROR</strong>
+
+                Could not read ${file}.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+       Match rank.
+
+       Rank may be numeric or string
+       depending on JSON.
+    */
+
+    const record =
+        data.find(
+            item =>
+                Number(item.Rank) === rank
+        );
+
+
+    if (!record) {
+
+        resultArea.innerHTML = `
+
+            <div class="not-found">
+
+                <strong>NO RESULT FOUND</strong>
+
+                Rank ${rank} is not available
+                in ${file}.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const university =
+        record.University || "Unknown University";
+
+
+    const website =
+        findUniversityWebsite(university);
+
+
+    const image =
+        await getUniversityImage(university);
+
+
+    const websiteHTML =
+        website
+            ? `
+                <a
+                    class="website-link"
+                    href="${normalizeWebsite(website)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ${escapeHTML(website)}
+                </a>
+              `
+            : `
+                <span>
+                    Website not available
+                </span>
+              `;
+
+
+    resultArea.innerHTML = `
+
+        <div class="result-card">
+
+
+            <div class="result-top">
+
+                <img
+                    class="university-image"
+                    src="${image}"
+                    alt="${escapeHTML(university)}"
+                    onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/640px-No-Image-Placeholder.svg.png'"
+                >
+
+
+                <div class="university-heading">
+
+                    <h2>
+                        ${escapeHTML(university)}
+                    </h2>
+
+                    <div class="rank-badge">
+                        PITCHBOOK RANK #${rank}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stats-grid">
+
+
+                <div class="stat">
+
+                    <div class="stat-label">
+                        Founder Count
+                    </div>
+
+                    <div class="stat-value">
+                        ${formatNumber(record["Founder Count"])}
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-label">
+                        Company Count
+                    </div>
+
+                    <div class="stat-value">
+                        ${formatNumber(record["Company Count"])}
+                    </div>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <div class="stat-label">
+                        Capital Raised
+                    </div>
+
+                    <div class="stat-value">
+                        ${formatCapital(record["Capital Raised"])}
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="details">
+
+
+                <div class="detail">
+
+                    <strong>Status</strong>
+
+                    <span>
+                        ${escapeHTML(record.Status || "Not available")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Country</strong>
+
+                    <span>
+                        ${escapeHTML(record.Country || "Not available")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Website</strong>
+
+                    ${websiteHTML}
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Category</strong>
+
+                    <span>
+                        ${escapeHTML(record.List || format)}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Enrollment</strong>
+
+                    <span>
+                        ${escapeHTML(record.Enrollment || "Not available")}
+                    </span>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <strong>Geography</strong>
+
+                    <span>
+                        ${escapeHTML(record.Geography || "Not available")}
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    `;
+
+
+    /*
+       Scroll result into view.
+    */
+
+    resultArea.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* ============================================================
+   WEBSITE NORMALIZATION
+============================================================ */
+
+function normalizeWebsite(url) {
+
+    let value =
+        String(url || "").trim();
+
+
+    if (!value) {
+
+        return "#";
+
+    }
+
+
+    if (
+        !value.startsWith("http://") &&
+        !value.startsWith("https://")
+    ) {
+
+        value =
+            "https://" + value;
+
+    }
+
+
+    return value;
+
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ============================================================
+   INITIALIZE
+============================================================ */
+
+loadUniversityDatabase();
+
+
+/* ============================================================
+   ENTER KEY
+============================================================ */
+
+document
+    .getElementById("rankInput")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                searchUniversity();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
